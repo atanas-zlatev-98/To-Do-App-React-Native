@@ -6,6 +6,7 @@ export default function App() {
 
   const [text,setText] = useState('');
   const [todos,setTodos] = useState([]);
+  const [error,setError] = useState(null);
 
   const textChangeHandler = (value) =>{
     setText(value);
@@ -14,23 +15,29 @@ export default function App() {
   const createTodoHandler = () =>{
 
     if(!text){
-      return alert('Misssing Todo Text!');
+      return setError('Todo text is required!')
     }
 
+    
     const lastTodoId = todos[todos.length - 1]?.id || 0;
-
+    
     const newTodo = {
       id:lastTodoId + 1,
       text,
       isCompleted: false,
     }
-
+    
+    setError(null);
     setTodos(oldTodos => [...oldTodos, newTodo]);
     setText('');
   }
 
   const toggleTodoHandler = (todoId) => {
    setTodos(todos => todos.map(todo => todo.id === todoId ? {...todo,isCompleted:!todo.isCompleted}: todo))
+  }
+
+  const deleteTodoHandler = (todoId) => {
+    setTodos(todos => todos.filter(todo => todo.id !== todoId));
   }
 
   return (
@@ -40,6 +47,10 @@ export default function App() {
         <Text style={styles.heading}>Todo List</Text>
       </View>
 
+      {error && (
+        <Text style={{textAlign:'center',color:'red'}}>{error}</Text>
+      )}
+
       <View style={{flexDirection:'row',borderWidth:1,justifyContent:'space-between',width:"100%",borderRadius:5}}>
         <TextInput placeholder='Go to the gym' value={text} onChangeText={textChangeHandler} onSubmitEditing={createTodoHandler}></TextInput>
         <Button title="Create" onPress={createTodoHandler} ></Button>
@@ -47,7 +58,7 @@ export default function App() {
 
       <View style={{width:'100%'}}>
         <Text>
-          {todos.map(todo => <TodoItem key={todo.id} {...todo} onDone={toggleTodoHandler}></TodoItem>)}
+          {todos.map(todo => <TodoItem key={todo.id} {...todo} onDelete={deleteTodoHandler} onDone={toggleTodoHandler}></TodoItem>)}
         </Text>
       </View>
     </View>
