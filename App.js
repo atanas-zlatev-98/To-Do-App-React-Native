@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Button, Text, TextInput, View } from 'react-native';
+import TodoItem from './components/TodoItem';
 
 export default function App() {
 
@@ -16,13 +17,20 @@ export default function App() {
       return alert('Misssing Todo Text!');
     }
 
+    const lastTodoId = todos[todos.length - 1]?.id || 0;
+
     const newTodo = {
+      id:lastTodoId + 1,
       text,
       isCompleted: false,
     }
 
     setTodos(oldTodos => [...oldTodos, newTodo]);
     setText('');
+  }
+
+  const toggleTodoHandler = (todoId) => {
+    alert(todoId)
   }
 
   return (
@@ -33,12 +41,14 @@ export default function App() {
       </View>
 
       <View style={{flexDirection:'row',borderWidth:1,justifyContent:'space-between',width:"100%",borderRadius:5}}>
-        <TextInput placeholder='Go to the gym' value={text} onChangeText={textChangeHandler}></TextInput>
-        <Button title="Create" onPress={createTodoHandler}></Button>
+        <TextInput placeholder='Go to the gym' value={text} onChangeText={textChangeHandler} onSubmitEditing={createTodoHandler}></TextInput>
+        <Button title="Create" onPress={createTodoHandler} ></Button>
       </View>
 
-      <View>
-        <Text>View</Text>
+      <View style={{width:'100%'}}>
+        <Text>
+          {todos.map(todo => <TodoItem key={todo.text} {...todo} onDone={toggleTodoHandler}></TodoItem>)}
+        </Text>
       </View>
     </View>
   );
